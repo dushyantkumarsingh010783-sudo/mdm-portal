@@ -365,3 +365,235 @@ row.style.display="none";
 
 
 }
+/*=====================================================
+ EDIT USER
+=====================================================*/
+
+function editUser(userId){
+
+    const user = ADMIN.users.find(
+        u => String(u[0]) === String(userId)
+    );
+
+
+    if(!user){
+
+        alert("User not found");
+
+        return;
+
+    }
+
+
+    document.getElementById("editUserId").value = user[0];
+
+    document.getElementById("editName").value = user[3];
+
+    document.getElementById("editRole").value = user[2];
+
+    document.getElementById("editNyayaPanchayat").value = user[4];
+
+    document.getElementById("editSchoolCode").value = user[5];
+
+    document.getElementById("editSchoolName").value = user[6];
+
+
+    document.getElementById("editUserModal")
+    .style.display="flex";
+
+}
+
+
+/*=====================================================
+ UPDATE USER
+=====================================================*/
+
+async function updateUser(){
+
+
+    const data={
+
+        userId:
+        document.getElementById("editUserId").value,
+
+
+        role:
+        document.getElementById("editRole").value,
+
+
+        name:
+        document.getElementById("editName").value,
+
+
+        nyayaPanchayat:
+        document.getElementById("editNyayaPanchayat").value,
+
+
+        schoolCode:
+        document.getElementById("editSchoolCode").value,
+
+
+        schoolName:
+        document.getElementById("editSchoolName").value
+
+    };
+
+
+    const result =
+    await apiRequest(
+        "updateUser",
+        data
+    );
+
+
+    alert(result.message);
+
+
+    if(result.status){
+
+        closeEditModal();
+
+        loadUsers();
+
+    }
+
+}
+
+
+
+/*=====================================================
+ MODAL CONTROL
+=====================================================*/
+
+
+function openUserModal(){
+
+    document.getElementById("userModal")
+    .style.display="flex";
+
+}
+
+
+function closeUserModal(){
+
+    document.getElementById("userModal")
+    .style.display="none";
+
+}
+
+
+function closeEditModal(){
+
+    document.getElementById("editUserModal")
+    .style.display="none";
+
+}
+
+
+
+/*=====================================================
+ LOGOUT
+=====================================================*/
+
+
+async function logoutUser(){
+
+    const token =
+    localStorage.getItem("token");
+
+
+    if(token){
+
+        await apiRequest(
+            "logout",
+            {
+                token:token
+            }
+        );
+
+    }
+
+
+    localStorage.clear();
+
+
+    window.location.href="index.html";
+
+}
+
+
+
+/*=====================================================
+ BUTTON EVENTS
+=====================================================*/
+
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+
+const createBtn =
+document.getElementById("btnCreateUser");
+
+
+if(createBtn){
+
+createBtn.onclick =
+openUserModal;
+
+}
+
+
+const saveBtn =
+document.getElementById("saveUserBtn");
+
+
+if(saveBtn){
+
+saveBtn.onclick =
+createUser;
+
+}
+
+
+const updateBtn =
+document.getElementById("updateUserBtn");
+
+
+if(updateBtn){
+
+updateBtn.onclick =
+updateUser;
+
+}
+
+
+const closeBtn =
+document.getElementById("closeModalBtn");
+
+
+if(closeBtn){
+
+closeBtn.onclick =
+closeUserModal;
+
+}
+
+
+const closeEdit =
+document.getElementById("closeEditBtn");
+
+
+if(closeEdit){
+
+closeEdit.onclick =
+closeEditModal;
+
+}
+
+
+loadUsers();
+
+
+});
