@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -7,69 +8,139 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SMART FORM ENTERPRISE v5.0</title>
+    <title>
+        SMART FORM ENTERPRISE v5.0
+    </title>
+
 
     <link rel="stylesheet" href="style.css">
 
+
 </head>
+
 
 <body>
 
-    <main id="loginPage">
 
-        <div class="login-card">
+<main id="loginPage">
 
-            <img src="logo.png"
-                 class="login-logo"
-                 alt="Logo">
 
-            <h1 class="login-title">
-                SMART FORM
-            </h1>
+    <div class="login-card">
 
-            <p class="login-subtitle">
-                ENTERPRISE v5.0
-            </p>
 
-            <div class="form-group">
+        <img 
+            src="logo.png"
+            class="login-logo"
+            alt="SMART FORM LOGO"
+        >
 
-                <label>User ID</label>
 
-                <input
-                    type="text"
-                    id="userId"
-                    class="form-control"
-                    placeholder="Enter User ID">
+        <h1 class="login-title">
 
-            </div>
+            SMART FORM
 
-            <div class="form-group">
+        </h1>
 
-                <label>Password</label>
 
-                <input
-                    type="password"
-                    id="password"
-                    class="form-control"
-                    placeholder="Enter Password">
+        <p class="login-subtitle">
 
-            </div>
+            ENTERPRISE v5.0
 
-            <button
-                id="loginBtn"
-                class="btn-login">
+        </p>
 
-                LOGIN
 
-            </button>
+
+        <div class="form-group">
+
+
+            <label>
+                User ID
+            </label>
+
+
+            <input
+
+                type="text"
+
+                id="userId"
+
+                class="form-control"
+
+                placeholder="Enter User ID"
+
+                autocomplete="username"
+
+            >
+
 
         </div>
 
-    </main>
 
-    <script src="script.js"></script>
+
+
+        <div class="form-group">
+
+
+            <label>
+                Password
+            </label>
+
+
+            <input
+
+                type="password"
+
+                id="password"
+
+                class="form-control"
+
+                placeholder="Enter Password"
+
+                autocomplete="current-password"
+
+            >
+
+
+        </div>
+
+
+
+
+        <button
+
+            id="loginBtn"
+
+            class="btn-login">
+
+
+            LOGIN
+
+
+        </button>
+
+
+
+    </div>
+
+
+
+</main>
+
+
+
+
+<!-- Configuration -->
+
+<script src="config.js"></script>
+
+
+<!-- Login Controller -->
+
+<script src="script.js"></script>
+
+
 
 </body>
 
+
 </html>
-<img src="logo.png" class="login-logo" alt="Logo">
