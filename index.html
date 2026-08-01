@@ -1,12 +1,543 @@
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
+
     <meta charset="UTF-8">
-    <title>MDM Portal</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color"
+          content="#1565C0">
+
+    <title>
+        MDM SMART MONITORING PORTAL
+    </title>
+
+    <meta name="description"
+          content="PM POSHAN MDM SMART MONITORING PORTAL">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
 </head>
+
 <body>
 
-<h1>MDM Portal Enterprise</h1>
+<div id="loader">
+
+    <div class="loader-box">
+
+        <div class="spinner"></div>
+
+        <h2>
+
+            MDM PORTAL
+
+        </h2>
+
+        <p>
+
+            Loading...
+
+        </p>
+
+    </div>
+
+</div>
+
+<div id="app">
+
+<header class="app-header">
+
+    <div class="logo-section">
+
+        <img
+            src="assets/logo.png"
+            class="logo"
+            alt="Logo">
+
+        <div>
+
+            <h1>
+
+                MDM SMART MONITORING PORTAL
+
+            </h1>
+
+            <span>
+
+                PM POSHAN
+
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="version">
+
+        Version 1.0
+
+    </div>
+
+</header>
+
+<main class="main-container">
+
+<section class="card">
+
+<div class="card-title">
+
+<h2>
+
+Monthly Data Entry
+
+</h2>
+
+<p>
+
+Government School Monitoring System
+
+</p>
+
+</div>
+
+<form
+id="entryForm"
+autocomplete="off">
+
+<div class="grid">
+
+<div class="form-group">
+
+<label>
+
+माह
+
+</label>
+
+<select
+id="month"
+required>
+
+<option value="">
+
+चयन करें
+
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+वर्ष
+
+</label>
+
+<select
+id="year"
+required>
+
+<option value="">
+
+चयन करें
+
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+न्याय पंचायत
+
+</label>
+
+<select
+id="nyayPanchayat"
+required>
+
+<option>
+
+लोड हो रहा है...
+
+</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>
+
+विद्यालय का प्रकार
+
+</label>
+
+<select
+id="schoolType"
+required>
+
+<option value="">
+
+चयन करें
+
+</option>
+
+<option>
+
+प्राथमिक
+
+</option>
+
+<option>
+
+उच्च प्राथमिक
+
+</option>
+
+<option>
+
+कम्पोजिट
+
+</option>
+
+</select>
+
+</div>
+<!-- ===========================
+     School Name
+=========================== -->
+
+<div class="form-group full-width">
+
+    <label>
+
+        विद्यालय का नाम
+
+    </label>
+
+    <select
+        id="schoolName"
+        placeholder="विद्यालय खोजें..."
+        required>
+
+        <option value="">
+
+            विद्यालय चुनें
+
+        </option>
+
+    </select>
+
+</div>
+
+<!-- ===========================
+     UDISE
+=========================== -->
+
+<div class="form-group">
+
+    <label>
+
+        UDISE Code
+
+    </label>
+
+    <input
+        type="text"
+        id="udise"
+        readonly>
+
+</div>
+
+<!-- ===========================
+     Student Count
+=========================== -->
+
+<div class="form-group">
+
+    <label>
+
+        छात्र संख्या
+
+    </label>
+
+    <input
+        type="number"
+        id="studentCount"
+        min="0"
+        placeholder="0"
+        required>
+
+</div>
+
+<!-- ===========================
+     Beneficiary
+=========================== -->
+
+<div class="form-group">
+
+    <label>
+
+        लाभार्थी संख्या
+
+    </label>
+
+    <input
+        type="number"
+        id="beneficiary"
+        min="0"
+        placeholder="0"
+        required>
+
+</div>
+
+<!-- ===========================
+     Working Days
+=========================== -->
+
+<div class="form-group">
+
+    <label>
+
+        कार्य दिवस
+
+    </label>
+
+    <input
+        type="number"
+        id="workingDays"
+        min="0"
+        max="31"
+        placeholder="0"
+        required>
+
+</div>
+
+<!-- ===========================
+     Grain Details
+=========================== -->
+
+<div class="form-group">
+
+    <label>
+
+        खाद्यान्न विवरण
+
+    </label>
+
+    <textarea
+        id="grain"
+        rows="3"
+        placeholder="गेहूँ / चावल आदि"></textarea>
+
+</div>
+
+<!-- ===========================
+     Fruit / Milk
+=========================== -->
+
+<div class="form-group">
+
+    <label>
+
+        फल / दूध
+
+    </label>
+
+    <input
+        type="text"
+        id="fruitMilk"
+        placeholder="यदि लागू हो">
+
+</div>
+
+<!-- ===========================
+     Remarks
+=========================== -->
+
+<div class="form-group full-width">
+
+    <label>
+
+        Remarks
+
+    </label>
+
+    <textarea
+        id="remarks"
+        rows="4"
+        placeholder="Remarks लिखें"></textarea>
+
+</div>
+
+</div>
+
+<!-- End Grid -->
+
+<div class="button-area">
+
+<button
+type="submit"
+id="submitBtn">
+
+<span class="material-icons">
+
+send
+
+</span>
+
+Submit
+
+</button>
+
+</div>
+<!-- ===========================
+     Snackbar
+=========================== -->
+
+<div id="snackbar"></div>
+
+<!-- ===========================
+     Success Dialog
+=========================== -->
+
+<div id="successDialog" class="dialog hidden">
+
+    <div class="dialog-content">
+
+        <span class="material-icons success-icon">
+
+            check_circle
+
+        </span>
+
+        <h2>
+
+            डेटा सफलतापूर्वक सेव हो गया।
+
+        </h2>
+
+        <p>
+
+            आपका MDM डेटा Google Sheet में सुरक्षित कर दिया गया है।
+
+        </p>
+
+        <button
+            id="dialogOkBtn"
+            type="button">
+
+            OK
+
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ===========================
+     Error Dialog
+=========================== -->
+
+<div id="errorDialog" class="dialog hidden">
+
+    <div class="dialog-content">
+
+        <span class="material-icons error-icon">
+
+            error
+
+        </span>
+
+        <h2>
+
+            सबमिट असफल
+
+        </h2>
+
+        <p id="errorMessage">
+
+            कृपया पुनः प्रयास करें।
+
+        </p>
+
+        <button
+            id="errorOkBtn"
+            type="button">
+
+            Close
+
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ===========================
+     Footer
+=========================== -->
+
+<footer class="footer">
+
+    <p>
+
+        © 2026 MDM SMART MONITORING PORTAL
+
+    </p>
+
+    <small>
+
+        Powered by Google Apps Script • Google Sheets • Cloudflare Pages
+
+    </small>
+
+</footer>
+
+</div>
+
+<!-- End App -->
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+
+<script src="js/config.js"></script>
+
+<script src="js/api.js"></script>
+
+<script src="js/app.js"></script>
 
 </body>
+
 </html>
+</form>
+
+</section>
+
+</main>
