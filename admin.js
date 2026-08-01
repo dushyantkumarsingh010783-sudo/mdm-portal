@@ -203,3 +203,165 @@ function renderUsers() {
     });
 
 }
+/*=====================================================
+ CREATE USER
+=====================================================*/
+
+async function createUser(){
+
+    const data = {
+
+        userId:
+        document.getElementById("newUserId").value.trim(),
+
+        password:
+        document.getElementById("newPassword").value.trim(),
+
+        role:
+        document.getElementById("newRole").value,
+
+        name:
+        document.getElementById("newName").value.trim(),
+
+        nyayaPanchayat:
+        document.getElementById("newNyayaPanchayat").value.trim(),
+
+        schoolCode:
+        document.getElementById("newSchoolCode").value.trim(),
+
+        schoolName:
+        document.getElementById("newSchoolName").value.trim()
+
+    };
+
+
+    const result = await apiRequest(
+        "createUser",
+        data
+    );
+
+
+    alert(result.message);
+
+
+    if(result.status){
+
+        closeUserModal();
+
+        loadUsers();
+
+    }
+
+}
+
+
+/*=====================================================
+ DELETE USER
+=====================================================*/
+
+async function deleteUserConfirm(userId){
+
+
+    if(!confirm("क्या आप इस User को Delete करना चाहते हैं?")){
+
+        return;
+
+    }
+
+
+    const result = await apiRequest(
+        "deleteUser",
+        {
+            userId:userId
+        }
+    );
+
+
+    alert(result.message);
+
+
+    if(result.status){
+
+        loadUsers();
+
+    }
+
+}
+
+
+/*=====================================================
+ RESET PASSWORD
+=====================================================*/
+
+async function resetUserPassword(userId,newPassword){
+
+
+    const result = await apiRequest(
+        "resetPassword",
+        {
+
+            userId:userId,
+
+            newPassword:newPassword
+
+        }
+    );
+
+
+    alert(result.message);
+
+
+}
+
+
+
+/*=====================================================
+ SEARCH USER
+=====================================================*/
+
+
+const searchBox =
+document.getElementById("searchUser");
+
+
+if(searchBox){
+
+searchBox.addEventListener(
+"keyup",
+function(){
+
+const keyword=this.value.toLowerCase();
+
+
+const rows =
+document.querySelectorAll(
+"#userTableBody tr"
+);
+
+
+rows.forEach(row=>{
+
+
+if(row.innerText.toLowerCase()
+.includes(keyword)){
+
+
+row.style.display="";
+
+
+}else{
+
+
+row.style.display="none";
+
+
+}
+
+
+});
+
+
+});
+
+
+}
