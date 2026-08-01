@@ -1,132 +1,92 @@
 /*=====================================================
  SMART FORM ENTERPRISE v5.0
- Admin Dashboard
- admin.js
- Part-1
+ Admin Dashboard JavaScript
+ File : admin.js
+ Version : Final
+ Part : 1
 =====================================================*/
 
 "use strict";
 
-const ADMIN = {
 
-    api: WEB_APP_URL,
+const ADMIN_APP = {
 
-    dashboard: null,
+    api : (typeof WEB_APP_URL !== "undefined")
+        ? WEB_APP_URL
+        : "",
 
-    users: []
+    users : [],
+
+    dashboard : {},
+
+    editUserId : null
 
 };
 
-document.addEventListener("DOMContentLoaded", () => {
 
-    initializeAdmin();
+/*=====================================================
+ INITIALIZE
+=====================================================*/
+
+document.addEventListener(
+"DOMContentLoaded",
+function(){
+
+    initAdmin();
 
 });
 
-async function initializeAdmin() {
 
-    bindEvents();
+function initAdmin(){
 
-    await loadDashboard();
+    bindAdminEvents();
 
-}
+    loadDashboard();
 
-function bindEvents() {
-
-    const logout = document.getElementById("logoutButton");
-
-    if (logout) {
-
-        logout.addEventListener("click", logoutUser);
-
-    }
+    loadUsers();
 
 }
 
-async function loadDashboard() {
 
-    try {
-
-        const result = await apiRequest("getDashboard", {});
-
-        if (!result.status) {
-
-            alert(result.message);
-
-            return;
-
-        }
-
-        ADMIN.dashboard = result.data;
-
-        renderDashboard(result.data);
-
-    } catch (err) {
-
-        console.error(err);
-
-    }
-
-}
-
-function renderDashboard(data) {
-
-    document.getElementById("totalUsers").textContent =
-        data.totalUsers || 0;
-
-    document.getElementById("totalNodal").textContent =
-        data.totalNodal || 0;
-
-    document.getElementById("totalSchools").textContent =
-        data.totalSchools || 0;
-
-    document.getElementById("pendingForms").textContent =
-        data.pendingForms || 0;
-
-    document.getElementById("submittedForms").textContent =
-        data.submittedForms || 0;
-
-    document.getElementById("todayLogin").textContent =
-        data.todayLogin || 0;
-
-}
 /*=====================================================
  API REQUEST
 =====================================================*/
 
-async function apiRequest(action, payload = {}) {
+async function adminAPI(action,data={}){
 
-    try {
+    try{
 
-        const response = await fetch(ADMIN.api, {
+        const response = await fetch(
+            ADMIN_APP.api,
+            {
 
-            method: "POST",
+            method:"POST",
 
-            headers: {
-
-                "Content-Type": "application/json"
-
+            headers:{
+                "Content-Type":"application/json"
             },
 
-            body: JSON.stringify({
+            body:JSON.stringify({
 
-                action: action,
+                action:action,
 
-                ...payload
+                ...data
 
             })
 
         });
 
+
         return await response.json();
 
-    } catch (err) {
+
+    }catch(error){
 
         return {
 
-            status: false,
+            status:false,
 
-            message: err.message
+            message:error.message
 
         };
 
@@ -134,123 +94,258 @@ async function apiRequest(action, payload = {}) {
 
 }
 
+
 /*=====================================================
- LOAD USERS
+ LOAD DASHBOARD
 =====================================================*/
 
-async function loadUsers() {
+async function loadDashboard(){
 
-    const result = await apiRequest("getUsers");
+    const result =
+    await adminAPI(
+        "getDashboard"
+    );
 
-    if (!result.status) {
 
-        alert(result.message);
+    if(!result.status){
 
         return;
 
     }
 
-    ADMIN.users = result.data || [];
+
+    ADMIN_APP.dashboard =
+    result.data;
+
+
+    setValue(
+        "totalUsers",
+        result.data.totalUsers
+    );
+
+
+    setValue(
+        "totalNodal",
+        result.data.totalNodal
+    );
+
+
+    setValue(
+        "totalSchools",
+        result.data.totalSchools
+    );
+
+
+    setValue(
+        "pendingForms",
+        result.data.pendingForms
+    );
+
+
+    setValue(
+        "submittedForms",
+        result.data.submittedForms
+    );
+
+
+    setValue(
+        "todayLogin",
+        result.data.todayLogin
+    );
+
+}
+
+
+
+/*=====================================================
+ HELPER
+=====================================================*/
+
+function setValue(id,value){
+
+    const el =
+    document.getElementById(id);
+
+
+    if(el){
+
+        el.innerText =
+        value || 0;
+
+    }
+
+}
+/*=====================================================
+ LOAD USERS
+=====================================================*/
+
+async function loadUsers(){
+
+    const result =
+    await adminAPI(
+        "getUsers"
+    );
+
+
+    if(!result.status){
+
+        showMessage(
+            result.message
+        );
+
+        return;
+
+    }
+
+
+    ADMIN_APP.users =
+    result.data || [];
+
 
     renderUsers();
 
 }
 
+
 /*=====================================================
  RENDER USER TABLE
 =====================================================*/
 
-function renderUsers() {
+function renderUsers(){
 
-    const tbody = document.getElementById("userTableBody");
+    const tbody =
+    document.getElementById(
+        "userTableBody"
+    );
 
-    if (!tbody) return;
 
-    tbody.innerHTML = "";
+    if(!tbody){
 
-    ADMIN.users.forEach(user => {
+        return;
 
-        const tr = document.createElement("tr");
+    }
 
-        tr.innerHTML = `
 
-            <td>${user[0]}</td>
-            <td>${user[3]}</td>
-            <td>${user[2]}</td>
-            <td>${user[6]}</td>
-            <td>${user[7]}</td>
+    tbody.innerHTML="";
 
-            <td>
 
-                <button onclick="editUser('${user[0]}')">
+    ADMIN_APP.users.forEach(
+    user=>{
 
-                    Edit
 
-                </button>
+        const row =
+        document.createElement(
+            "tr"
+        );
 
-                <button onclick="deleteUserConfirm('${user[0]}')">
 
-                    Delete
+        row.innerHTML = `
 
-                </button>
+        <td>${user[0] || ""}</td>
 
-            </td>
+        <td>${user[3] || ""}</td>
+
+        <td>${user[2] || ""}</td>
+
+        <td>${user[6] || ""}</td>
+
+        <td>
+            ${user[7] ? "Active" : "Inactive"}
+        </td>
+
+        <td>
+
+            <button 
+            onclick="openEditUser('${user[0]}')">
+
+            Edit
+
+            </button>
+
+
+            <button 
+            onclick="removeUser('${user[0]}')">
+
+            Delete
+
+            </button>
+
+        </td>
 
         `;
 
-        tbody.appendChild(tr);
+
+        tbody.appendChild(row);
+
 
     });
 
 }
+
+
 /*=====================================================
  CREATE USER
 =====================================================*/
 
-async function createUser(){
+async function saveNewUser(){
 
-    const data = {
+
+    const userData={
+
 
         userId:
-        document.getElementById("newUserId").value.trim(),
+        getInput("newUserId"),
+
 
         password:
-        document.getElementById("newPassword").value.trim(),
+        getInput("newPassword"),
+
 
         role:
-        document.getElementById("newRole").value,
+        getInput("newRole"),
+
 
         name:
-        document.getElementById("newName").value.trim(),
+        getInput("newName"),
+
 
         nyayaPanchayat:
-        document.getElementById("newNyayaPanchayat").value.trim(),
+        getInput("newNyayaPanchayat"),
+
 
         schoolCode:
-        document.getElementById("newSchoolCode").value.trim(),
+        getInput("newSchoolCode"),
+
 
         schoolName:
-        document.getElementById("newSchoolName").value.trim()
+        getInput("newSchoolName")
+
 
     };
 
 
-    const result = await apiRequest(
+    const result =
+    await adminAPI(
         "createUser",
-        data
+        userData
     );
 
 
-    alert(result.message);
+    showMessage(
+        result.message
+    );
 
 
     if(result.status){
 
-        closeUserModal();
+        closeModal(
+            "userModal"
+        );
 
         loadUsers();
 
     }
+
 
 }
 
@@ -259,17 +354,22 @@ async function createUser(){
  DELETE USER
 =====================================================*/
 
-async function deleteUserConfirm(userId){
+async function removeUser(userId){
 
 
-    if(!confirm("क्या आप इस User को Delete करना चाहते हैं?")){
+    if(
+    !confirm(
+    "क्या आप इस User को Delete करना चाहते हैं?"
+    )
+    ){
 
         return;
 
     }
 
 
-    const result = await apiRequest(
+    const result =
+    await adminAPI(
         "deleteUser",
         {
             userId:userId
@@ -277,7 +377,9 @@ async function deleteUserConfirm(userId){
     );
 
 
-    alert(result.message);
+    showMessage(
+        result.message
+    );
 
 
     if(result.status){
@@ -287,119 +389,67 @@ async function deleteUserConfirm(userId){
     }
 
 }
-
-
-/*=====================================================
- RESET PASSWORD
-=====================================================*/
-
-async function resetUserPassword(userId,newPassword){
-
-
-    const result = await apiRequest(
-        "resetPassword",
-        {
-
-            userId:userId,
-
-            newPassword:newPassword
-
-        }
-    );
-
-
-    alert(result.message);
-
-
-}
-
-
-
-/*=====================================================
- SEARCH USER
-=====================================================*/
-
-
-const searchBox =
-document.getElementById("searchUser");
-
-
-if(searchBox){
-
-searchBox.addEventListener(
-"keyup",
-function(){
-
-const keyword=this.value.toLowerCase();
-
-
-const rows =
-document.querySelectorAll(
-"#userTableBody tr"
-);
-
-
-rows.forEach(row=>{
-
-
-if(row.innerText.toLowerCase()
-.includes(keyword)){
-
-
-row.style.display="";
-
-
-}else{
-
-
-row.style.display="none";
-
-
-}
-
-
-});
-
-
-});
-
-
-}
 /*=====================================================
  EDIT USER
 =====================================================*/
 
-function editUser(userId){
+function openEditUser(userId){
 
-    const user = ADMIN.users.find(
+    const user =
+    ADMIN_APP.users.find(
         u => String(u[0]) === String(userId)
     );
 
 
     if(!user){
 
-        alert("User not found");
+        showMessage(
+            "User not found"
+        );
 
         return;
 
     }
 
 
-    document.getElementById("editUserId").value = user[0];
-
-    document.getElementById("editName").value = user[3];
-
-    document.getElementById("editRole").value = user[2];
-
-    document.getElementById("editNyayaPanchayat").value = user[4];
-
-    document.getElementById("editSchoolCode").value = user[5];
-
-    document.getElementById("editSchoolName").value = user[6];
+    ADMIN_APP.editUserId =
+    userId;
 
 
-    document.getElementById("editUserModal")
-    .style.display="flex";
+    setInput(
+        "editUserId",
+        user[0]
+    );
+
+    setInput(
+        "editName",
+        user[3]
+    );
+
+    setInput(
+        "editRole",
+        user[2]
+    );
+
+    setInput(
+        "editNyayaPanchayat",
+        user[4]
+    );
+
+    setInput(
+        "editSchoolCode",
+        user[5]
+    );
+
+    setInput(
+        "editSchoolName",
+        user[6]
+    );
+
+
+    openModal(
+        "editUserModal"
+    );
 
 }
 
@@ -408,50 +458,48 @@ function editUser(userId){
  UPDATE USER
 =====================================================*/
 
-async function updateUser(){
-
+async function updateExistingUser(){
 
     const data={
 
         userId:
-        document.getElementById("editUserId").value,
-
+        getInput("editUserId"),
 
         role:
-        document.getElementById("editRole").value,
-
+        getInput("editRole"),
 
         name:
-        document.getElementById("editName").value,
-
+        getInput("editName"),
 
         nyayaPanchayat:
-        document.getElementById("editNyayaPanchayat").value,
-
+        getInput("editNyayaPanchayat"),
 
         schoolCode:
-        document.getElementById("editSchoolCode").value,
-
+        getInput("editSchoolCode"),
 
         schoolName:
-        document.getElementById("editSchoolName").value
+        getInput("editSchoolName")
 
     };
 
 
     const result =
-    await apiRequest(
+    await adminAPI(
         "updateUser",
         data
     );
 
 
-    alert(result.message);
+    showMessage(
+        result.message
+    );
 
 
     if(result.status){
 
-        closeEditModal();
+        closeModal(
+            "editUserModal"
+        );
 
         loadUsers();
 
@@ -460,51 +508,54 @@ async function updateUser(){
 }
 
 
-
 /*=====================================================
- MODAL CONTROL
+ SEARCH USER
 =====================================================*/
 
+function searchUser(){
 
-function openUserModal(){
+    const keyword =
+    getInput("searchUser")
+    .toLowerCase();
 
-    document.getElementById("userModal")
-    .style.display="flex";
+
+    document
+    .querySelectorAll(
+        "#userTableBody tr"
+    )
+    .forEach(row=>{
+
+
+        row.style.display =
+        row.innerText
+        .toLowerCase()
+        .includes(keyword)
+        ?
+        ""
+        :
+        "none";
+
+
+    });
 
 }
-
-
-function closeUserModal(){
-
-    document.getElementById("userModal")
-    .style.display="none";
-
-}
-
-
-function closeEditModal(){
-
-    document.getElementById("editUserModal")
-    .style.display="none";
-
-}
-
 
 
 /*=====================================================
  LOGOUT
 =====================================================*/
 
-
-async function logoutUser(){
+async function adminLogout(){
 
     const token =
-    localStorage.getItem("token");
+    localStorage.getItem(
+        "token"
+    );
 
 
     if(token){
 
-        await apiRequest(
+        await adminAPI(
             "logout",
             {
                 token:token
@@ -517,83 +568,160 @@ async function logoutUser(){
     localStorage.clear();
 
 
-    window.location.href="index.html";
+    window.location.href =
+    "index.html";
 
 }
-
 
 
 /*=====================================================
- BUTTON EVENTS
+ MODAL FUNCTIONS
 =====================================================*/
 
+function openModal(id){
 
-document.addEventListener(
-"DOMContentLoaded",
-()=>{
+    const modal =
+    document.getElementById(id);
 
+    if(modal){
 
-const createBtn =
-document.getElementById("btnCreateUser");
+        modal.style.display="flex";
 
-
-if(createBtn){
-
-createBtn.onclick =
-openUserModal;
+    }
 
 }
 
 
-const saveBtn =
-document.getElementById("saveUserBtn");
+function closeModal(id){
 
+    const modal =
+    document.getElementById(id);
 
-if(saveBtn){
+    if(modal){
 
-saveBtn.onclick =
-createUser;
+        modal.style.display="none";
 
-}
-
-
-const updateBtn =
-document.getElementById("updateUserBtn");
-
-
-if(updateBtn){
-
-updateBtn.onclick =
-updateUser;
+    }
 
 }
 
 
-const closeBtn =
-document.getElementById("closeModalBtn");
+/*=====================================================
+ HELPERS
+=====================================================*/
 
+function getInput(id){
 
-if(closeBtn){
+    const el =
+    document.getElementById(id);
 
-closeBtn.onclick =
-closeUserModal;
-
-}
-
-
-const closeEdit =
-document.getElementById("closeEditBtn");
-
-
-if(closeEdit){
-
-closeEdit.onclick =
-closeEditModal;
+    return el ?
+    el.value.trim()
+    :
+    "";
 
 }
 
 
-loadUsers();
+function setInput(id,value){
+
+    const el =
+    document.getElementById(id);
+
+    if(el){
+
+        el.value =
+        value || "";
+
+    }
+
+}
 
 
-});
+function showMessage(msg){
+
+    alert(
+        msg || "Completed"
+    );
+
+}
+
+
+/*=====================================================
+ EVENT BINDING
+=====================================================*/
+
+function bindAdminEvents(){
+
+
+    const create =
+    document.getElementById(
+        "btnCreateUser"
+    );
+
+    if(create){
+
+        create.onclick =
+        ()=>{
+            openModal(
+                "userModal"
+            );
+        };
+
+    }
+
+
+    const save =
+    document.getElementById(
+        "saveUserBtn"
+    );
+
+    if(save){
+
+        save.onclick =
+        saveNewUser;
+
+    }
+
+
+    const update =
+    document.getElementById(
+        "updateUserBtn"
+    );
+
+    if(update){
+
+        update.onclick =
+        updateExistingUser;
+
+    }
+
+
+    const logout =
+    document.getElementById(
+        "logoutButton"
+    );
+
+
+    if(logout){
+
+        logout.onclick =
+        adminLogout;
+
+    }
+
+
+    const search =
+    document.getElementById(
+        "searchUser"
+    );
+
+
+    if(search){
+
+        search.onkeyup =
+        searchUser;
+
+    }
+
+}
