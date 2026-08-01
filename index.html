@@ -1,110 +1,129 @@
 <!DOCTYPE html>
 <html lang="hi">
+
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART FORM ENTERPRISE</title>
 
-<title>SMART MDM PORTAL</title>
+    <link rel="stylesheet" href="style.css">
 
-<link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
 
-<div class="header">
+    <header class="header">
 
-<h1>🍛 SMART MDM PORTAL</h1>
+        <h1>SMART FORM</h1>
 
-<p>PM POSHAN Monitoring System</p>
+        <p>PM POSHAN Monitoring Portal</p>
+
+    </header>
+
+    <main>
+
+        <form id="smartForm" autocomplete="off">
+
+            <div class="form-group">
+
+                <label>न्याय पंचायत</label>
+
+                <select id="nyayPanchayat" required>
+
+                    <option value="">लोड हो रहा है...</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>विद्यालय का प्रकार</label>
+
+                <select id="schoolType" required>
+
+                    <option value="">चयन करें</option>
+
+                    <option value="प्राथमिक">प्राथमिक</option>
+
+                    <option value="उच्च प्राथमिक">उच्च प्राथमिक</option>
+
+                    <option value="कम्पोजिट">कम्पोजिट</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>विद्यालय का नाम</label>
+
+                <select id="schoolName" required>
+
+                    <option value="">पहले ऊपर चयन करें</option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>प्रधानाध्यापक का नाम</label>
+
+                <input
+                    type="text"
+                    id="headmaster"
+                    placeholder="प्रधानाध्यापक का नाम"
+                    required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>मोबाइल नम्बर</label>
+
+                <input
+                    type="tel"
+                    id="mobile"
+                    maxlength="10"
+                    placeholder="10 अंकों का मोबाइल नम्बर"
+                    required>
+
+            </div>
+
+            <button type="submit">
+
+                डेटा सुरक्षित करें
+
+            </button>
+
+        </form>
+
+    </main>
+
+    <footer>
+
+        SMART FORM ENTERPRISE v3.0
+
+    </footer>
 
 </div>
 
-<form id="mdmForm">
+<div id="loader" class="loader hidden">
 
-<div class="form-group">
-
-<label>न्याय पंचायत</label>
-
-<select id="nyay" required>
-
-<option value="">-- चयन करें --</option>
-
-</select>
+    कृपया प्रतीक्षा करें...
 
 </div>
 
-<div class="form-group">
-
-<label>विद्यालय का प्रकार</label>
-
-<select id="type" required>
-
-<option value="">-- चयन करें --</option>
-
-<option>प्राथमिक</option>
-
-<option>उच्च प्राथमिक</option>
-
-<option>कम्पोजिट</option>
-
-</select>
-
-</div>
-
-<div class="form-group">
-
-<label>विद्यालय का नाम</label>
-
-<select id="school" required>
-
-<option value="">-- पहले चयन करें --</option>
-
-</select>
-
-</div>
-
-<div class="form-group">
-
-<label>प्रधानाध्यापक का नाम</label>
-
-<input
-type="text"
-id="hm"
-placeholder="प्रधानाध्यापक का नाम"
-required>
-
-</div>
-
-<div class="form-group">
-
-<label>मोबाइल नम्बर</label>
-
-<input
-type="tel"
-id="mobile"
-maxlength="10"
-placeholder="10 अंकों का मोबाइल नम्बर"
-required>
-
-</div>
-
-<button type="submit">
-
-डेटा सुरक्षित करें
-
-</button>
-
-</form>
-
-<div id="message"></div>
-
-</div>
+<script src="config.js"></script>
 
 <script src="script.js"></script>
 
 </body>
+
 </html>
