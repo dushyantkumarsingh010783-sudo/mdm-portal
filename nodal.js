@@ -1072,3 +1072,178 @@ function resetEntryForm(){
     });
 
 }
+/*=====================================================
+ AUTO SESSION CHECK
+=====================================================*/
+
+function startSessionMonitor(){
+
+    setInterval(async function(){
+
+        try{
+
+            const response = await fetch(
+
+                WEB_APP_URL +
+
+                "?action=nodalProfile&token=" +
+
+                encodeURIComponent(NODAL.token)
+
+            );
+
+            const result = await response.json();
+
+            if(!result.status){
+
+                alert("Session Expired");
+
+                localStorage.clear();
+
+                window.location.href="index.html";
+
+            }
+
+        }
+
+        catch(error){
+
+            console.log(error);
+
+        }
+
+    },300000);
+
+}
+
+
+/*=====================================================
+ AUTO REFRESH DASHBOARD
+=====================================================*/
+
+function startAutoRefresh(){
+
+    setInterval(async function(){
+
+        try{
+
+            await loadDashboard();
+
+        }
+
+        catch(error){
+
+            console.log(error);
+
+        }
+
+    },30000);
+
+}
+
+
+/*=====================================================
+ NETWORK STATUS
+=====================================================*/
+
+window.addEventListener(
+
+    "offline",
+
+    function(){
+
+        alert(
+
+            "Internet Connection Lost."
+
+        );
+
+    }
+
+);
+
+window.addEventListener(
+
+    "online",
+
+    function(){
+
+        refreshDashboard();
+
+    }
+
+);
+
+
+/*=====================================================
+ INITIALIZE SERVICES
+=====================================================*/
+
+function initializeServices(){
+
+    startSessionMonitor();
+
+    startAutoRefresh();
+
+}
+
+
+/*=====================================================
+ FORMAT NUMBER
+=====================================================*/
+
+function formatNumber(value){
+
+    return Number(value).toLocaleString("en-IN");
+
+}
+
+
+/*=====================================================
+ SUCCESS MESSAGE
+=====================================================*/
+
+function showSuccess(message){
+
+    alert(message);
+
+}
+
+
+/*=====================================================
+ ERROR MESSAGE
+=====================================================*/
+
+function showError(message){
+
+    alert(message);
+
+}
+
+
+/*=====================================================
+ CONFIRM DIALOG
+=====================================================*/
+
+function confirmAction(message){
+
+    return confirm(message);
+
+}
+
+
+/*=====================================================
+ PAGE LOAD COMPLETE
+=====================================================*/
+
+window.addEventListener(
+
+    "load",
+
+    function(){
+
+        initializeServices();
+
+    }
+
+);
