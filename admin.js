@@ -2,210 +2,301 @@
  SMART FORM ENTERPRISE v5.0
  Admin Dashboard Controller
  File : admin.js
- Version : Final
+ Version : Production Final
 =====================================================*/
-
 
 "use strict";
 
+/*=====================================================
+ APPLICATION
+=====================================================*/
 
-const ADMIN_APP = {
+const ADMIN = {
 
-    user:null,
+    token : "",
 
-    token:null
+    user  : null
 
 };
 
 
-
-
-
 /*=====================================================
- PAGE LOAD
+ DOM READY
 =====================================================*/
 
-
 document.addEventListener(
-"DOMContentLoaded",
-function(){
-
-    initializeAdmin();
-
-});
-
-
-
+    "DOMContentLoaded",
+    initializeDashboard
+);
 
 
 /*=====================================================
  INITIALIZE
 =====================================================*/
 
+async function initializeDashboard(){
 
-function initializeAdmin(){
+    ADMIN.token = localStorage.getItem("token");
 
+    if(!ADMIN.token){
 
-    ADMIN_APP.token =
-    localStorage.getItem("token");
-
-
-
-    const user =
-    localStorage.getItem("user");
-
-
-
-    if(!ADMIN_APP.token || !user){
-
-
-        window.location.href =
-        "index.html";
-
+        window.location.href="index.html";
 
         return;
 
     }
 
+    try{
 
+        loadUserInfo();
 
-    ADMIN_APP.user =
-    JSON.parse(user);
+        await loadDashboard();
 
+        bindEvents();
 
+    }
 
-    loadUser();
+    catch(error){
 
+        console.error(error);
 
+        alert(error.message);
 
-    bindAdminEvents();
-
+    }
 
 }
-
-
-
-
 
 
 /*=====================================================
- LOAD USER
+ USER INFO
 =====================================================*/
 
+function loadUserInfo(){
 
-function loadUser(){
-
-
-    const box =
-    document.getElementById(
-        "userInfo"
+    const user =
+    JSON.parse(
+        localStorage.getItem("user") || "{}"
     );
 
+    ADMIN.user=user;
 
+    const div=
+    document.getElementById("userInfo");
 
-    if(!box){
+    if(!div){
 
         return;
 
     }
 
-
-
-    box.innerHTML =
-
+    div.innerHTML=
     `
-    <p>
-    <b>Name:</b>
-    ${ADMIN_APP.user.name || ""}
-    </p>
-
-
-    <p>
-    <b>Role:</b>
-    ${ADMIN_APP.user.role || ""}
-    </p>
-
-
-    <p>
-    <b>User ID:</b>
-    ${ADMIN_APP.user.userId || "admin"}
-    </p>
+    <b>Name :</b> ${user.name || "-"}<br>
+    <b>User ID :</b> ${user.userId || "-"}<br>
+    <b>Role :</b> ${user.role || "-"}
     `;
-
 
 }
 
 
+/*=====================================================
+ LOAD DASHBOARD
+=====================================================*/
+
+async function loadDashboard(){
+
+    const url=
+
+        WEB_APP_URL
+
+        +
+
+        "?action=dashboard"
+
+        +
+
+        "&token="
+
+        +
+
+        encodeURIComponent(
+            ADMIN.token
+        );
 
 
+    const response=
+    await fetch(url);
+
+    const result=
+    await response.json();
+
+
+    if(!result.status){
+
+        throw new Error(
+
+            result.message
+
+        );
+
+    }
+
+
+    updateDashboard(
+
+        result.data
+
+    );
+
+}
+
+
+/*=====================================================
+ UPDATE DASHBOARD
+=====================================================*/
+
+function updateDashboard(data){
+
+    setText(
+
+        "schoolCount",
+
+        data.totalSchools || 0
+
+    );
+
+
+    setText(
+
+        "responseCount",
+
+        data.totalResponses || 0
+
+    );
+
+
+    setText(
+
+        "userCount",
+
+        data.activeUsers || 0
+
+    );
+
+}
+
+
+/*=====================================================
+ SET TEXT
+=====================================================*/
+
+function setText(
+
+id,
+
+value
+
+){
+
+    const el=
+
+    document.getElementById(id);
+
+    if(el){
+
+        el.textContent=value;
+
+    }
+
+}
 
 
 /*=====================================================
  EVENTS
 =====================================================*/
 
+function bindEvents(){
 
-function bindAdminEvents(){
+    const btn=
 
-
-    const logout =
     document.getElementById(
+
         "logoutBtn"
+
     );
 
+    if(btn){
 
+        btn.addEventListener(
 
-    if(logout){
-
-
-        logout.addEventListener(
             "click",
-            logoutUser
-        );
 
+            logout
+
+        );
 
     }
 
-
 }
-
-
-
-
 
 
 /*=====================================================
  LOGOUT
 =====================================================*/
 
+async function logout(){
 
-function logoutUser(){
+    if(
 
+        !confirm(
 
-    localStorage.removeItem(
-        "token"
-    );
+            "क्या आप Logout करना चाहते हैं?"
 
+        )
 
-    localStorage.removeItem(
-        "role"
-    );
+    ){
 
+        return;
 
-    localStorage.removeItem(
-        "user"
-    );
+    }
 
 
+    try{
 
-    alert(
-    "Logout Successful"
-    );
+        const url=
+
+        WEB_APP_URL
+
+        +
+
+        "?action=logout"
+
+        +
+
+        "&token="
+
+        +
+
+        encodeURIComponent(
+
+            ADMIN.token
+
+        );
 
 
+        await fetch(url);
 
-    window.location.href =
-    "index.html";
+    }
 
+    catch(e){
+
+        console.log(e);
+
+    }
+
+
+    localStorage.clear();
+
+    window.location.href="index.html";
 
 }
