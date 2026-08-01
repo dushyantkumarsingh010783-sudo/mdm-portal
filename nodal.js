@@ -238,15 +238,12 @@ async function loadDashboard(){
     ).textContent =
     result.data.pendingSchools;
 
-    document.getElementById(
+      document.getElementById(
         "progressPercent"
     ).textContent =
     result.data.progress + "%";
-/*=====================================================
- LOAD SCHOOL LIST
-=====================================================*/
 
-async function loadSchools(){
+}
 
     const url =
 
