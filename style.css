@@ -1,114 +1,207 @@
-/* ===========================================
-   SMART MDM PORTAL
-   Production CSS v1.0
-=========================================== */
+/* ==================================================
+   SMART FORM ENTERPRISE v3.0
+================================================== */
 
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
-    background:#f4f7fb;
+
+    font-family:'Noto Sans Devanagari',sans-serif;
+
+    background:#eef3f8;
+
+    color:#222;
+
 }
 
-.container{
+.app{
+
     width:95%;
+
     max-width:520px;
+
     margin:25px auto;
+
     background:#fff;
-    border-radius:14px;
-    box-shadow:0 10px 30px rgba(0,0,0,.12);
+
+    border-radius:16px;
+
     overflow:hidden;
+
+    box-shadow:0 12px 35px rgba(0,0,0,.12);
+
 }
 
 .header{
-    background:#1565c0;
+
+    background:#0d47a1;
+
     color:#fff;
+
     padding:22px;
+
     text-align:center;
+
 }
 
 .header h1{
-    font-size:26px;
-    margin-bottom:6px;
+
+    font-size:28px;
+
 }
 
 .header p{
+
+    margin-top:6px;
+
     opacity:.9;
+
 }
 
 form{
+
     padding:20px;
+
 }
 
 .form-group{
+
     margin-bottom:18px;
+
 }
 
 label{
+
     display:block;
+
     margin-bottom:8px;
+
     font-weight:600;
-    color:#333;
+
 }
 
 input,
 select{
+
     width:100%;
-    padding:12px;
+
+    padding:13px;
+
     border:1px solid #cfd8dc;
-    border-radius:8px;
+
+    border-radius:10px;
+
     font-size:15px;
+
     transition:.3s;
+
     background:#fff;
+
 }
 
 input:focus,
 select:focus{
+
     outline:none;
+
     border-color:#1565c0;
+
     box-shadow:0 0 0 3px rgba(21,101,192,.15);
+
 }
 
 button{
+
     width:100%;
+
     padding:14px;
+
     border:none;
-    border-radius:8px;
+
+    border-radius:10px;
+
     background:#1565c0;
+
     color:#fff;
+
     font-size:17px;
-    font-weight:bold;
+
+    font-weight:700;
+
     cursor:pointer;
+
     transition:.3s;
+
 }
 
 button:hover{
-    background:#0d47a1;
+
+    background:#0b3b8a;
+
 }
 
-#message{
-    padding:18px;
+footer{
+
     text-align:center;
+
+    padding:15px;
+
+    background:#f5f5f5;
+
+    color:#666;
+
+    font-size:13px;
+
+}
+
+.loader{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(255,255,255,.75);
+
+    font-size:20px;
+
     font-weight:bold;
-    color:#2e7d32;
+
+}
+
+.hidden{
+
+    display:none;
+
 }
 
 @media(max-width:600px){
 
 .header h1{
-    font-size:22px;
+
+font-size:24px;
+
 }
 
-.container{
-    margin:10px auto;
+.app{
+
+margin:10px auto;
+
 }
 
 form{
-    padding:15px;
+
+padding:15px;
+
 }
 
 }
