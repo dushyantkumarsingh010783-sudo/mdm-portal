@@ -70,22 +70,61 @@ function loadSchools() {
 nyay.addEventListener("change", loadSchools);
 type.addEventListener("change", loadSchools);
 
-/* Submit */
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxxGcoqNCngf6K97DzaheHr6jdEHOgTto9uwMT7drxZRJlADlFflnDlg1OQcBiXBOiR/exec";
 
-form.addEventListener("submit", function(e){
+form.addEventListener("submit", async function(e){
 
-  e.preventDefault();
+    e.preventDefault();
 
-  message.innerHTML = "⏳ डेटा सेव किया जा रहा है...";
+    message.innerHTML = "⏳ डेटा सेव किया जा रहा है...";
 
-  setTimeout(function(){
+    const payload = {
 
-    message.innerHTML = "✅ डेटा सफलतापूर्वक सुरक्षित किया गया।";
+        nyay: nyay.value,
 
-    form.reset();
+        type: type.value,
 
-    school.innerHTML='<option value="">-- पहले चयन करें --</option>';
+        school: school.value,
 
-  },1000);
+        hm: document.getElementById("hm").value,
+
+        mobile: document.getElementById("mobile").value
+
+    };
+
+    try{
+
+        const res = await fetch(API_URL,{
+
+            method:"POST",
+
+            body:JSON.stringify(payload)
+
+        });
+
+        const json = await res.json();
+
+        if(json.success){
+
+            message.innerHTML="✅ डेटा सफलतापूर्वक Google Sheet में सेव हो गया।";
+
+            form.reset();
+
+            school.innerHTML='<option value="">-- पहले चयन करें --</option>';
+
+        }else{
+
+            message.innerHTML="❌ "+json.error;
+
+        }
+
+    }catch(err){
+
+        message.innerHTML="❌ नेटवर्क त्रुटि";
+
+        console.error(err);
+
+    }
 
 });
