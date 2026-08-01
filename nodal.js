@@ -1200,3 +1200,43 @@ async function logout(){
     }
 
 );
+/*=====================================================
+ LOGOUT
+=====================================================*/
+
+async function logout(){
+
+    try{
+
+        if(!confirm("Are you sure you want to logout?")){
+
+            return;
+
+        }
+
+        await fetch(
+
+            WEB_APP_URL +
+
+            "?action=logout&token=" +
+
+            encodeURIComponent(NODAL.token)
+
+        );
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+    }
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    sessionStorage.clear();
+
+    window.location.href = "index.html";
+
+}
