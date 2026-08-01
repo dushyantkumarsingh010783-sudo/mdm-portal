@@ -1,42 +1,46 @@
 /*=====================================================
- SMART FORM ENTERPRISE v5.0
+ SMART FORM ENTERPRISE v6.0
  Nodal Dashboard Controller
  File : nodal.js
- Version : Production Part-1
+ Version : Production Final
 =====================================================*/
 
 "use strict";
 
 /*=====================================================
- APPLICATION STATE
+ CONFIGURATION
 =====================================================*/
 
 const NODAL = {
 
     token : "",
 
-    profile : null,
+    profile : {},
 
-    dashboard : null,
+    dashboard : {},
 
     schools : [],
 
+    filteredSchools : [],
+
     currentPage : 1,
 
-    pageSize : 10
+    pageSize : 10,
+
+    totalPages : 1
 
 };
 
 
 /*=====================================================
- DOM READY
+ PAGE LOAD
 =====================================================*/
 
 document.addEventListener(
 
     "DOMContentLoaded",
 
-    initializeNodal
+    initNodal
 
 );
 
@@ -45,7 +49,7 @@ document.addEventListener(
  INITIALIZE
 =====================================================*/
 
-async function initializeNodal(){
+async function initNodal(){
 
     try{
 
@@ -61,17 +65,25 @@ async function initializeNodal(){
 
         }
 
-        bindEvents();
+        registerEvents();
+
+        showLoading(true);
 
         await loadProfile();
 
         await loadDashboard();
 
-        await loadSchools();
+        await loadAssignedSchools();
+
+        initializeServices();
+
+        showLoading(false);
 
     }
 
     catch(error){
+
+        showLoading(false);
 
         console.error(error);
 
@@ -86,94 +98,102 @@ async function initializeNodal(){
  EVENTS
 =====================================================*/
 
-function bindEvents(){
+function registerEvents(){
 
-    document
-    .getElementById("logoutBtn")
-    .addEventListener(
-        "click",
-        logout
-    );
+    const logoutBtn =
 
-    document
-    .getElementById("searchBtn")
-    .addEventListener(
-        "click",
-        searchSchool
-    );
+    document.getElementById("logoutBtn");
 
-    document
-    .getElementById("refreshBtn")
-    .addEventListener(
-        "click",
-        refreshDashboard
-    );
+    if(logoutBtn){
+
+        logoutBtn.onclick = logout;
+
+    }
+
+    const refreshBtn =
+
+    document.getElementById("refreshBtn");
+
+    if(refreshBtn){
+
+        refreshBtn.onclick = refreshDashboard;
+
+    }
+
+    const searchBtn =
+
+    document.getElementById("searchBtn");
+
+    if(searchBtn){
+
+        searchBtn.onclick = searchSchool;
+
+    }
+
+    const searchBox =
+
+    document.getElementById("searchSchool");
+
+    if(searchBox){
+
+        searchBox.addEventListener(
+
+            "keyup",
+
+            searchSchool
+
+        );
+
+    }
 
 }
-
-
 /*=====================================================
  LOAD PROFILE
 =====================================================*/
 
 async function loadProfile(){
 
-    const url =
+    const response = await fetch(
 
-        WEB_APP_URL
+        WEB_APP_URL +
 
-        +
+        "?action=nodalProfile&token=" +
 
-        "?action=nodalProfile"
+        encodeURIComponent(NODAL.token)
 
-        +
+    );
 
-        "&token="
-
-        +
-
-        encodeURIComponent(
-
-            NODAL.token
-
-        );
-
-    const response =
-    await fetch(url);
-
-    const result =
-    await response.json();
+    const result = await response.json();
 
     if(!result.status){
 
-        throw new Error(
-
-            result.message
-
-        );
+        throw new Error(result.message);
 
     }
 
-    NODAL.profile =
-    result.data;
+    NODAL.profile = result.data;
 
-    document
-    .getElementById("userInfo")
-    .innerHTML =
+    const userInfo =
 
-    "<b>Name :</b> "
+    document.getElementById("userInfo");
 
-    +
+    if(userInfo){
 
-    result.data.name
+        userInfo.innerHTML =
 
-    +
+        "<b>Name :</b> "
 
-    "<br><b>Nyay Panchayat :</b> "
+        + result.data.name +
 
-    +
+        "<br><b>User ID :</b> "
 
-    result.data.nyayPanchayat;
+        + result.data.userId +
+
+        "<br><b>Nyay Panchayat :</b> "
+
+        + result.data.nyayPanchayat;
+
+    }
 
 }
 
@@ -184,94 +204,17 @@ async function loadProfile(){
 
 async function loadDashboard(){
 
-    const url =
+    const response = await fetch(
 
-        WEB_APP_URL
+        WEB_APP_URL +
 
-        +
+        "?action=nodalDashboard&token=" +
 
-        "?action=nodalDashboard"
+        encodeURIComponent(NODAL.token)
 
-        +
-
-        "&token="
-
-        +
-
-        encodeURIComponent(
-
-            NODAL.token
-
-        );
-
-    const response =
-    await fetch(url);
-
-    const result =
-    await response.json();
-
-    if(!result.status){
-
-        throw new Error(
-
-            result.message
-
-        );
-
-    }
-
-    NODAL.dashboard =
-    result.data;
-
-    document.getElementById(
-        "assignedSchools"
-    ).textContent =
-    result.data.assignedSchools;
-
-    document.getElementById(
-        "submittedResponses"
-    ).textContent =
-    result.data.submittedResponses;
-
-    document.getElementById(
-        "pendingSchools"
-    ).textContent =
-    result.data.pendingSchools;
-
-      document.getElementById(
-        "progressPercent"
-    ).textContent =
-    result.data.progress + "%";
-
-}
-
-    const url =
-
-        WEB_APP_URL
-
-        +
-
-        "?action=assignedSchools"
-
-        +
-
-        "&token="
-
-        +
-
-        encodeURIComponent(
-
-            NODAL.token
-
-        );
-
-    showLoading(true);
-
-    const response = await fetch(url);
+    );
 
     const result = await response.json();
-
-    showLoading(false);
 
     if(!result.status){
 
@@ -279,34 +222,177 @@ async function loadDashboard(){
 
     }
 
-    NODAL.schools = result.data.schools;
+    NODAL.dashboard = result.data;
 
-    renderSchoolTable(NODAL.schools);
+    setText(
+
+        "assignedSchools",
+
+        result.data.assignedSchools
+
+    );
+
+    setText(
+
+        "submittedResponses",
+
+        result.data.submittedResponses
+
+    );
+
+    setText(
+
+        "pendingSchools",
+
+        result.data.pendingSchools
+
+    );
+
+    setText(
+
+        "progressPercent",
+
+        result.data.progress + "%"
+
+    );
 
 }
 
 
 /*=====================================================
- RENDER SCHOOL TABLE
+ REFRESH DASHBOARD
+=====================================================*/
+
+async function refreshDashboard(){
+
+    showLoading(true);
+
+    try{
+
+        await loadDashboard();
+
+        await loadAssignedSchools();
+
+    }
+
+    finally{
+
+        showLoading(false);
+
+    }
+
+}
+
+
+/*=====================================================
+ LOAD ASSIGNED SCHOOLS
+=====================================================*/
+
+async function loadAssignedSchools(){
+
+    const response = await fetch(
+
+        WEB_APP_URL +
+
+        "?action=assignedSchools&token=" +
+
+        encodeURIComponent(NODAL.token)
+
+    );
+
+    const result = await response.json();
+
+    if(!result.status){
+
+        throw new Error(result.message);
+
+    }
+
+    /*-----------------------------------------
+      API Compatibility
+    -----------------------------------------*/
+
+    if(Array.isArray(result.data)){
+
+        NODAL.schools = result.data;
+
+    }
+
+    else if(
+
+        result.data &&
+
+        Array.isArray(result.data.schools)
+
+    ){
+
+        NODAL.schools =
+
+        result.data.schools;
+
+    }
+
+    else{
+
+        NODAL.schools = [];
+
+    }
+
+    NODAL.filteredSchools =
+
+    [...NODAL.schools];
+
+    NODAL.currentPage = 1;
+
+    renderCurrentPage();
+
+}
+
+
+/*=====================================================
+ SET TEXT
+=====================================================*/
+
+function setText(id,value){
+
+    const element =
+
+    document.getElementById(id);
+
+    if(element){
+
+        element.textContent = value;
+
+    }
+
+}
+/*=====================================================
+ SCHOOL TABLE
 =====================================================*/
 
 function renderSchoolTable(list){
 
-    const tbody =
+    const tbody = document.getElementById("schoolTableBody");
 
-    document.getElementById(
+    if(!tbody){
+        return;
+    }
 
-        "schoolTableBody"
-
-    );
-
-    tbody.innerHTML="";
+    tbody.innerHTML = "";
 
     if(list.length===0){
 
-        tbody.innerHTML=
+        tbody.innerHTML =
 
-        "<tr><td colspan='5'>No School Found</td></tr>";
+        "<tr>" +
+
+        "<td colspan='6' style='text-align:center'>" +
+
+        "No School Found" +
+
+        "</td>" +
+
+        "</tr>";
 
         return;
 
@@ -314,13 +400,25 @@ function renderSchoolTable(list){
 
     list.forEach(function(item,index){
 
+        const rowNumber =
+
+        ((NODAL.currentPage-1)*NODAL.pageSize)
+
+        +
+
+        index
+
+        +
+
+        1;
+
         tbody.innerHTML +=
 
         "<tr>"
 
         +
 
-        "<td>"+(index+1)+"</td>"
+        "<td>"+rowNumber+"</td>"
 
         +
 
@@ -340,11 +438,11 @@ function renderSchoolTable(list){
 
         +
 
-        "<button "
+        "<button class='btn-primary' "
 
         +
 
-        "onclick='openEntry(\""
+        "onclick=\"openEntry('"
 
         +
 
@@ -352,15 +450,7 @@ function renderSchoolTable(list){
 
         +
 
-        "\")'>"
-
-        +
-
-        "ENTRY"
-
-        +
-
-        "</button>"
+        "')\">Entry</button>"
 
         +
 
@@ -371,6 +461,127 @@ function renderSchoolTable(list){
         "</tr>";
 
     });
+
+}
+
+
+/*=====================================================
+ PAGINATION
+=====================================================*/
+
+function renderCurrentPage(){
+
+    NODAL.totalPages =
+
+    Math.max(
+
+        1,
+
+        Math.ceil(
+
+            NODAL.filteredSchools.length /
+
+            NODAL.pageSize
+
+        )
+
+    );
+
+    const start =
+
+    (NODAL.currentPage-1)
+
+    *
+
+    NODAL.pageSize;
+
+    const end =
+
+    start +
+
+    NODAL.pageSize;
+
+    renderSchoolTable(
+
+        NODAL.filteredSchools.slice(
+
+            start,
+
+            end
+
+        )
+
+    );
+
+    const pageInfo =
+
+    document.getElementById("pageInfo");
+
+    if(pageInfo){
+
+        pageInfo.textContent =
+
+        "Page "
+
+        +
+
+        NODAL.currentPage
+
+        +
+
+        " / "
+
+        +
+
+        NODAL.totalPages;
+
+    }
+
+}
+
+
+/*=====================================================
+ NEXT PAGE
+=====================================================*/
+
+function nextPage(){
+
+    if(
+
+        NODAL.currentPage
+
+        <
+
+        NODAL.totalPages
+
+    ){
+
+        NODAL.currentPage++;
+
+        renderCurrentPage();
+
+    }
+
+}
+
+
+/*=====================================================
+ PREVIOUS PAGE
+=====================================================*/
+
+function previousPage(){
+
+    if(
+
+        NODAL.currentPage>1
+
+    ){
+
+        NODAL.currentPage--;
+
+        renderCurrentPage();
+
+    }
 
 }
 
@@ -399,246 +610,81 @@ function searchSchool(){
 
     if(keyword===""){
 
-        renderSchoolTable(
+        NODAL.filteredSchools =
 
-            NODAL.schools
-
-        );
-
-        return;
+        [...NODAL.schools];
 
     }
 
-    const result =
+    else{
 
-    NODAL.schools.filter(function(item){
+        NODAL.filteredSchools =
 
-        return (
+        NODAL.schools.filter(function(item){
 
-            item.schoolName
+            return(
 
-            .toLowerCase()
+                String(item.schoolName)
 
-            .includes(keyword)
+                .toLowerCase()
 
-            ||
+                .includes(keyword)
 
-            item.udise
+                ||
 
-            .toLowerCase()
+                String(item.udise)
 
-            .includes(keyword)
+                .toLowerCase()
 
-        );
+                .includes(keyword)
 
-    });
+                ||
 
-    renderSchoolTable(result);
+                String(item.status)
 
-}
+                .toLowerCase()
 
+                .includes(keyword)
 
-/*=====================================================
- REFRESH
-=====================================================*/
+            );
 
-async function refreshDashboard(){
-
-    await loadDashboard();
-
-    await loadSchools();
-
-}
-
-
-/*=====================================================
- OPEN ENTRY
-=====================================================*/
-
-function openEntry(schoolId){
-
-    alert(
-
-        "School Entry Module\n\n"
-
-        +
-
-        "School ID : "
-
-        +
-
-        schoolId
-
-    );
-
-}
-
-
-/*=====================================================
- LOADING PANEL
-=====================================================*/
-
-function showLoading(status){
-
-    const panel =
-
-    document.getElementById(
-
-        "loadingPanel"
-
-    );
-
-    if(!panel){
-
-        return;
+        });
 
     }
 
-    panel.style.display =
+    NODAL.currentPage = 1;
 
-    status
-
-    ?
-
-    "flex"
-
-    :
-
-    "none";
+    renderCurrentPage();
 
 }
-}
-/*=====================================================
- PAGINATION
-=====================================================*/
-
-function nextPage(){
-
-    const totalPages =
-
-    Math.ceil(
-
-        NODAL.schools.length /
-
-        NODAL.pageSize
-
-    );
-
-    if(
-
-        NODAL.currentPage < totalPages
-
-    ){
-
-        NODAL.currentPage++;
-
-        renderCurrentPage();
-
-    }
-
-}
-
-
-function previousPage(){
-
-    if(
-
-        NODAL.currentPage > 1
-
-    ){
-
-        NODAL.currentPage--;
-
-        renderCurrentPage();
-
-    }
-
-}
-
-
-function renderCurrentPage(){
-
-    const start =
-
-    (
-
-        NODAL.currentPage - 1
-
-    )
-
-    *
-
-    NODAL.pageSize;
-
-    const end =
-
-    start +
-
-    NODAL.pageSize;
-
-    const pageData =
-
-    NODAL.schools.slice(
-
-        start,
-
-        end
-
-    );
-
-    renderSchoolTable(
-
-        pageData
-
-    );
-
-    document.getElementById(
-
-        "pageInfo"
-
-    ).textContent =
-
-    "Page "
-
-    +
-
-    NODAL.currentPage;
-
-}
-
-
 /*=====================================================
  ENTRY MODAL
 =====================================================*/
 
-function openEntry(
+function openEntry(schoolId){
 
-schoolId
+    const modal = document.getElementById("entryModal");
 
-){
+    if(modal){
 
-    document.getElementById(
+        modal.style.display = "block";
 
-        "entryModal"
+    }
 
-    ).style.display="block";
-
-    loadSchoolDetails(
-
-        schoolId
-
-    );
+    loadSchoolDetails(schoolId);
 
 }
 
 
 function closeEntry(){
 
-    document.getElementById(
+    const modal = document.getElementById("entryModal");
 
-        "entryModal"
+    if(modal){
 
-    ).style.display="none";
+        modal.style.display = "none";
+
+    }
 
 }
 
@@ -647,213 +693,75 @@ function closeEntry(){
  LOAD SCHOOL DETAILS
 =====================================================*/
 
-async function loadSchoolDetails(
+async function loadSchoolDetails(schoolId){
 
-schoolId
-
-){
-
-    const url =
-
-        WEB_APP_URL
-
-        +
-
-        "?action=schoolDetails"
-
-        +
-
-        "&token="
-
-        +
-
-        encodeURIComponent(
-
-            NODAL.token
-
-        )
-
-        +
-
-        "&schoolId="
-
-        +
-
-        encodeURIComponent(
-
-            schoolId
-
-        );
-
-    const response =
-
-    await fetch(url);
-
-    const result =
-
-    await response.json();
-
-    if(
-
-        !result.status
-
-    ){
-
-        alert(
-
-            result.message
-
-        );
-
-        return;
-
-    }
-
-    document.getElementById(
-
-        "formContainer"
-
-    ).innerHTML =
-
-    "<h3>"
-
-    +
-
-    result.data.schoolName
-
-    +
-
-    "</h3>"
-
-    +
-
-    "<p>UDISE : "
-
-    +
-
-    result.data.udise
-
-    +
-
-    "</p>";
-
-}
-
-
-/*=====================================================
- LOGOUT
-=====================================================*/
-
-async function logout(){
-
-    if(
-
-        !confirm(
-
-            "Logout ?"
-
-        )
-
-    ){
-
-        return;
-
-    }
+    showLoading(true);
 
     try{
 
-        await fetch(
+        const response = await fetch(
 
-            WEB_APP_URL
+            WEB_APP_URL +
 
-            +
+            "?action=schoolDetails" +
 
-            "?action=logout"
+            "&token=" +
 
-            +
+            encodeURIComponent(NODAL.token) +
 
-            "&token="
+            "&schoolId=" +
 
-            +
-
-            encodeURIComponent(
-
-                NODAL.token
-
-            )
+            encodeURIComponent(schoolId)
 
         );
 
+        const result = await response.json();
+
+        if(!result.status){
+
+            throw new Error(result.message);
+
+        }
+
+        const school = result.data;
+
+        setValue("schoolId",school.schoolId);
+
+        setValue("schoolName",school.schoolName);
+
+        setValue("udise",school.udise);
+
     }
 
-    catch(e){
+    catch(error){
 
-        console.log(e);
+        alert(error.message);
 
     }
 
-    localStorage.clear();
+    finally{
 
-    window.location.href =
+        showLoading(false);
 
-    "index.html";
+    }
 
 }
 
 
 /*=====================================================
- ERROR HANDLER
-=====================================================*/
-
-window.onerror = function(
-
-message,
-
-source,
-
-line,
-
-column,
-
-error
-
-){
-
-    console.error(
-
-        message,
-
-        source,
-
-        line,
-
-        column
-
-    );
-
-    alert(
-
-        "Application Error\n\n"
-
-        +
-
-        message
-
-    );
-
-};
-/*=====================================================
- FORM SUBMIT
+ SUBMIT ENTRY
 =====================================================*/
 
 async function submitEntry(){
 
     try{
 
-        const formData = collectFormData();
+        const data = collectFormData();
 
-        if(!validateForm(formData)){
+        if(!validateForm(data)){
+
             return;
+
         }
 
         showLoading(true);
@@ -867,7 +775,9 @@ async function submitEntry(){
                 method:"POST",
 
                 headers:{
+
                     "Content-Type":"application/json"
+
                 },
 
                 body:JSON.stringify({
@@ -876,7 +786,7 @@ async function submitEntry(){
 
                     token:NODAL.token,
 
-                    data:formData
+                    data:data
 
                 })
 
@@ -886,13 +796,9 @@ async function submitEntry(){
 
         const result = await response.json();
 
-        showLoading(false);
-
         if(!result.status){
 
-            alert(result.message);
-
-            return;
+            throw new Error(result.message);
 
         }
 
@@ -906,11 +812,13 @@ async function submitEntry(){
 
     catch(error){
 
-        showLoading(false);
-
-        console.error(error);
-
         alert(error.message);
+
+    }
+
+    finally{
+
+        showLoading(false);
 
     }
 
@@ -925,81 +833,29 @@ function collectFormData(){
 
     return{
 
-        schoolId :
+        schoolId:getValue("schoolId"),
 
-        document.getElementById("schoolId").value,
+        schoolName:getValue("schoolName"),
 
-        schoolName :
+        udise:getValue("udise"),
 
-        document.getElementById("schoolName").value,
+        month:getValue("month"),
 
-        udise :
+        year:getValue("year"),
 
-        document.getElementById("udise").value,
+        students:Number(getValue("students")),
 
-        month :
+        workingDays:Number(getValue("workingDays")),
 
-        document.getElementById("month").value,
+        mealDays:Number(getValue("mealDays")),
 
-        year :
+        wheat:Number(getValue("wheat")),
 
-        document.getElementById("year").value,
+        rice:Number(getValue("rice")),
 
-        students :
+        fruitDays:Number(getValue("fruitDays")),
 
-        Number(
-
-            document.getElementById("students").value
-
-        ),
-
-        workingDays :
-
-        Number(
-
-            document.getElementById("workingDays").value
-
-        ),
-
-        mealDays :
-
-        Number(
-
-            document.getElementById("mealDays").value
-
-        ),
-
-        wheat :
-
-        Number(
-
-            document.getElementById("wheat").value
-
-        ),
-
-        rice :
-
-        Number(
-
-            document.getElementById("rice").value
-
-        ),
-
-        fruitDays :
-
-        Number(
-
-            document.getElementById("fruitDays").value
-
-        ),
-
-        fruitQty :
-
-        Number(
-
-            document.getElementById("fruitQty").value
-
-        )
+        fruitQty:Number(getValue("fruitQty"))
 
     };
 
@@ -1007,22 +863,22 @@ function collectFormData(){
 
 
 /*=====================================================
- FORM VALIDATION
+ VALIDATE FORM
 =====================================================*/
 
 function validateForm(data){
 
-    if(!data.month){
+    if(data.month===""){
 
-        alert("Select Month");
+        alert("Please Select Month");
 
         return false;
 
     }
 
-    if(!data.year){
+    if(data.year===""){
 
-        alert("Select Year");
+        alert("Please Select Year");
 
         return false;
 
@@ -1030,7 +886,7 @@ function validateForm(data){
 
     if(data.students<=0){
 
-        alert("Enter Students");
+        alert("Enter Student Count");
 
         return false;
 
@@ -1050,27 +906,35 @@ function validateForm(data){
 
 
 /*=====================================================
- RESET FORM
+ COMMON GET VALUE
 =====================================================*/
 
-function resetEntryForm(){
+function getValue(id){
 
-    document
-    .querySelectorAll(
+    const el=document.getElementById(id);
 
-        "#formContainer input"
+    return el ? el.value : "";
 
-    )
+}
 
-    .forEach(function(item){
 
-        item.value="";
+/*=====================================================
+ COMMON SET VALUE
+=====================================================*/
 
-    });
+function setValue(id,value){
+
+    const el=document.getElementById(id);
+
+    if(el){
+
+        el.value=value;
+
+    }
 
 }
 /*=====================================================
- AUTO SESSION CHECK
+ SESSION MONITOR
 =====================================================*/
 
 function startSessionMonitor(){
@@ -1093,7 +957,7 @@ function startSessionMonitor(){
 
             if(!result.status){
 
-                alert("Session Expired");
+                alert("Your session has expired.");
 
                 localStorage.clear();
 
@@ -1109,13 +973,13 @@ function startSessionMonitor(){
 
         }
 
-    },300000);
+    },300000); // 5 Minutes
 
 }
 
 
 /*=====================================================
- AUTO REFRESH DASHBOARD
+ AUTO REFRESH
 =====================================================*/
 
 function startAutoRefresh(){
@@ -1134,7 +998,26 @@ function startAutoRefresh(){
 
         }
 
-    },30000);
+    },60000); // 1 Minute
+
+}
+
+
+/*=====================================================
+ LOADING PANEL
+=====================================================*/
+
+function showLoading(status){
+
+    const panel = document.getElementById("loadingPanel");
+
+    if(!panel){
+
+        return;
+
+    }
+
+    panel.style.display = status ? "flex" : "none";
 
 }
 
@@ -1143,33 +1026,17 @@ function startAutoRefresh(){
  NETWORK STATUS
 =====================================================*/
 
-window.addEventListener(
+window.addEventListener("offline",function(){
 
-    "offline",
+    alert("Internet connection lost.");
 
-    function(){
+});
 
-        alert(
+window.addEventListener("online",function(){
 
-            "Internet Connection Lost."
+    refreshDashboard();
 
-        );
-
-    }
-
-);
-
-window.addEventListener(
-
-    "online",
-
-    function(){
-
-        refreshDashboard();
-
-    }
-
-);
+});
 
 
 /*=====================================================
@@ -1191,7 +1058,7 @@ function initializeServices(){
 
 function formatNumber(value){
 
-    return Number(value).toLocaleString("en-IN");
+    return Number(value||0).toLocaleString("en-IN");
 
 }
 
@@ -1219,7 +1086,7 @@ function showError(message){
 
 
 /*=====================================================
- CONFIRM DIALOG
+ CONFIRM
 =====================================================*/
 
 function confirmAction(message){
@@ -1230,7 +1097,52 @@ function confirmAction(message){
 
 
 /*=====================================================
- PAGE LOAD COMPLETE
+ GLOBAL ERROR
+=====================================================*/
+
+window.onerror = function(
+
+    message,
+
+    source,
+
+    line,
+
+    column,
+
+    error
+
+){
+
+    console.error(
+
+        message,
+
+        source,
+
+        line,
+
+        column,
+
+        error
+
+    );
+
+    alert(
+
+        "Application Error\n\n"
+
+        +
+
+        message
+
+    );
+
+};
+
+
+/*=====================================================
+ WINDOW LOAD
 =====================================================*/
 
 window.addEventListener(
