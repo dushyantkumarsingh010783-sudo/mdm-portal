@@ -4,7 +4,9 @@
 =====================================================*/
 
 
-const WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbxxGcqNCngf6K97DzahEhr6jdEHogTto9uwMT7drxZRJ1AD1FfInDlg10QcBiXBOiR/exec";
+
 
 
 const APP_CONFIG = {
