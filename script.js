@@ -1,7 +1,6 @@
 /*=====================================================
  SMART FORM ENTERPRISE v5.0
- Production JavaScript
- Part-1 : Login Events
+ Production JavaScript v2
 =====================================================*/
 
 "use strict";
@@ -12,11 +11,11 @@
 
 const APP = {
 
-    loading : false,
+    loading: false,
 
-    session : null,
+    session: null,
 
-    role : null
+    role: null
 
 };
 
@@ -34,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
  INITIALIZE
 =====================================================*/
 
-function initializeApp(){
+function initializeApp() {
 
     bindEvents();
 
@@ -44,11 +43,11 @@ function initializeApp(){
  EVENTS
 =====================================================*/
 
-function bindEvents(){
+function bindEvents() {
 
     const loginBtn = document.getElementById("loginBtn");
 
-    if(loginBtn){
+    if (loginBtn) {
 
         loginBtn.addEventListener("click", login);
 
@@ -56,11 +55,11 @@ function bindEvents(){
 
     const password = document.getElementById("password");
 
-    if(password){
+    if (password) {
 
-        password.addEventListener("keydown", function(e){
+        password.addEventListener("keydown", function (e) {
 
-            if(e.key==="Enter"){
+            if (e.key === "Enter") {
 
                 login();
 
@@ -76,28 +75,64 @@ function bindEvents(){
  LOGIN
 =====================================================*/
 
-function login(){
+function login() {
 
-    const userId=document.getElementById("userId").value.trim();
+    const userId = document.getElementById("userId").value.trim();
 
-    const password=document.getElementById("password").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    if(userId===""){
+    if (userId === "") {
 
-        alert("User ID दर्ज करें");
-
-        return;
-
-    }
-
-    if(password===""){
-
-        alert("Password दर्ज करें");
+        alert("कृपया User ID दर्ज करें।");
 
         return;
 
     }
 
-    alert("Login API अगले Part में जोड़ी जाएगी.");
+    if (password === "") {
+
+        alert("कृपया Password दर्ज करें।");
+
+        return;
+
+    }
+
+    setLoading(true);
+
+    setTimeout(function () {
+
+        setLoading(false);
+
+        alert("Google Apps Script Login अगले चरण में जोड़ा जाएगा।");
+
+    }, 1200);
+
+}
+
+/*=====================================================
+ LOADING
+=====================================================*/
+
+function setLoading(status) {
+
+    APP.loading = status;
+
+    const btn = document.getElementById("loginBtn");
+
+    if (!btn) return;
+
+    if (status) {
+
+        btn.disabled = true;
+
+        btn.innerHTML = "Please Wait...";
+
+    } else {
+
+        btn.disabled = false;
+
+        btn.innerHTML = "LOGIN";
+
+    }
 
 }
