@@ -1,8 +1,10 @@
 /*=====================================================
  SMART FORM ENTERPRISE v5.0
  Production JavaScript
- Login Module Final
+ File : script.js
+ Version : Final
 =====================================================*/
+
 
 "use strict";
 
@@ -25,7 +27,7 @@ const APP = {
 
 document.addEventListener(
 "DOMContentLoaded",
-()=>{
+function(){
 
     bindEvents();
 
@@ -40,13 +42,15 @@ document.addEventListener(
 function bindEvents(){
 
 
-    const loginBtn =
-    document.getElementById("loginBtn");
+    const btn =
+    document.getElementById(
+        "loginBtn"
+    );
 
 
-    if(loginBtn){
+    if(btn){
 
-        loginBtn.addEventListener(
+        btn.addEventListener(
             "click",
             login
         );
@@ -54,25 +58,30 @@ function bindEvents(){
     }
 
 
+
     const password =
-    document.getElementById("password");
+    document.getElementById(
+        "password"
+    );
 
 
     if(password){
 
         password.addEventListener(
-        "keydown",
-        e=>{
+            "keydown",
+            function(e){
 
-            if(e.key==="Enter"){
+                if(e.key==="Enter"){
 
-                login();
+                    login();
+
+                }
 
             }
-
-        });
+        );
 
     }
+
 
 }
 
@@ -133,16 +142,15 @@ async function login(){
 
 
         const result =
-        await apiRequest(
-            "login",
-            {
+        await apiRequest({
 
-                userId:userId,
+            action:"login",
 
-                password:password
+            userId:userId,
 
-            }
-        );
+            password:password
+
+        });
 
 
 
@@ -160,38 +168,40 @@ async function login(){
 
             return;
 
+
         }
 
 
 
-        // Save Session
-
         localStorage.setItem(
+
             "token",
+
             result.data.token
+
         );
 
 
+
         localStorage.setItem(
+
             "role",
+
             result.data.role
+
         );
+
 
 
         localStorage.setItem(
+
             "user",
-            JSON.stringify(result.data)
+
+            JSON.stringify(
+                result.data
+            )
+
         );
-
-
-
-        APP.session =
-        result.data;
-
-
-
-        APP.role =
-        result.data.role;
 
 
 
@@ -207,13 +217,16 @@ async function login(){
 
 
 
-    }catch(error){
+    }
+    catch(error){
 
 
         setLoading(false);
 
 
         alert(
+        "Server Connection Error : "
+        +
         error.message
         );
 
@@ -225,50 +238,72 @@ async function login(){
 
 
 
+
+
 /*=====================================================
  API REQUEST
 =====================================================*/
 
-async function apiRequest(
-action,
-data={}
-){
+async function apiRequest(data){
 
 
     const response =
     await fetch(
+
         WEB_APP_URL,
+
         {
 
 
-        method:"POST",
+            method:"POST",
 
 
-        headers:{
+            headers:{
 
-            "Content-Type":
-            "application/json"
+                "Content-Type":
+                "text/plain;charset=utf-8"
 
-        },
-
-
-        body:JSON.stringify({
-
-            action:action,
-
-            ...data
-
-        })
+            },
 
 
-    });
+            body:
+
+            JSON.stringify(data)
+
+
+        }
+
+    );
 
 
 
-    return await response.json();
+    const text =
+    await response.text();
+
+
+
+    try{
+
+
+        return JSON.parse(text);
+
+
+    }
+
+    catch(e){
+
+
+        throw new Error(
+            text
+        );
+
+
+    }
 
 
 }
+
+
 
 
 
@@ -285,45 +320,56 @@ function redirectUser(role){
 
 
 
-    if(role==="ADMIN"){
+    switch(role){
 
 
-        window.location.href =
-        "admin.html";
+        case "ADMIN":
 
 
-    }
-
-    else if(role==="NODAL"){
-
-
-        window.location.href =
-        "nodal.html";
+            window.location.href =
+            "admin.html";
 
 
-    }
-
-    else if(role==="SCHOOL"){
+            break;
 
 
-        window.location.href =
-        "school.html";
+
+        case "NODAL":
 
 
-    }
+            window.location.href =
+            "nodal.html";
 
-    else{
+
+            break;
 
 
-        alert(
-        "Invalid Role"
-        );
+
+        case "SCHOOL":
+
+
+            window.location.href =
+            "school.html";
+
+
+            break;
+
+
+
+        default:
+
+
+            alert(
+            "Role Not Defined"
+            );
 
 
     }
 
 
 }
+
+
 
 
 
@@ -337,6 +383,7 @@ function setLoading(status){
     APP.loading=status;
 
 
+
     const btn =
     document.getElementById(
         "loginBtn"
@@ -344,7 +391,11 @@ function setLoading(status){
 
 
 
-    if(!btn) return;
+    if(!btn){
+
+        return;
+
+    }
 
 
 
@@ -357,7 +408,8 @@ function setLoading(status){
         "Please Wait...";
 
 
-    }else{
+    }
+    else{
 
 
         btn.disabled=false;
