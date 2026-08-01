@@ -2,7 +2,7 @@
  SMART FORM ENTERPRISE v5.0
  Admin Dashboard Controller
  File : admin.js
- Version : Production Final
+ Version : Production Debug v5.1
 =====================================================*/
 
 "use strict";
@@ -36,23 +36,25 @@ document.addEventListener(
 
 async function initializeDashboard(){
 
-    ADMIN.token = localStorage.getItem("token");
-
-    if(!ADMIN.token){
-
-        window.location.href="index.html";
-
-        return;
-
-    }
-
     try{
+
+        ADMIN.token = localStorage.getItem("token");
+
+        if(!ADMIN.token){
+
+            alert("Session Expired");
+
+            window.location.href="index.html";
+
+            return;
+
+        }
 
         loadUserInfo();
 
-        await loadDashboard();
-
         bindEvents();
+
+        await loadDashboard();
 
     }
 
@@ -73,15 +75,15 @@ async function initializeDashboard(){
 
 function loadUserInfo(){
 
-    const user =
-    JSON.parse(
+    const user = JSON.parse(
+
         localStorage.getItem("user") || "{}"
+
     );
 
-    ADMIN.user=user;
+    ADMIN.user = user;
 
-    const div=
-    document.getElementById("userInfo");
+    const div = document.getElementById("userInfo");
 
     if(!div){
 
@@ -89,12 +91,17 @@ function loadUserInfo(){
 
     }
 
-    div.innerHTML=
-    `
-    <b>Name :</b> ${user.name || "-"}<br>
-    <b>User ID :</b> ${user.userId || "-"}<br>
-    <b>Role :</b> ${user.role || "-"}
-    `;
+    div.innerHTML =
+
+    "<b>Name:</b> " + (user.name || "-")
+
+    + "<br>"
+
+    + "<b>Role:</b> " + (user.role || "-")
+
+    + "<br>"
+
+    + "<b>User ID:</b> " + (user.userId || "-");
 
 }
 
@@ -105,48 +112,87 @@ function loadUserInfo(){
 
 async function loadDashboard(){
 
-    const url=
+    try{
 
-        WEB_APP_URL
+        const url =
 
-        +
+            WEB_APP_URL
 
-        "?action=dashboard"
+            +
 
-        +
+            "?action=dashboard"
 
-        "&token="
+            +
 
-        +
+            "&token="
 
-        encodeURIComponent(
-            ADMIN.token
+            +
+
+            encodeURIComponent(
+
+                ADMIN.token
+
+            );
+
+        console.log("Dashboard URL");
+
+        console.log(url);
+
+        const response = await fetch(
+
+            url,
+
+            {
+
+                method:"GET"
+
+            }
+
         );
 
+        console.log("HTTP Status");
 
-    const response=
-    await fetch(url);
+        console.log(response.status);
 
-    const result=
-    await response.json();
+        const result = await response.json();
 
+        console.log("Dashboard Response");
 
-    if(!result.status){
+        console.log(result);
 
-        throw new Error(
+        if(!result.status){
 
-            result.message
+            throw new Error(
+
+                result.message
+
+            );
+
+        }
+
+        updateDashboard(
+
+            result.data
 
         );
 
     }
 
+    catch(error){
 
-    updateDashboard(
+        console.error(error);
 
-        result.data
+        alert(
 
-    );
+            "Dashboard Load Failed\n\n"
+
+            +
+
+            error.message
+
+        );
+
+    }
 
 }
 
@@ -157,56 +203,37 @@ async function loadDashboard(){
 
 function updateDashboard(data){
 
-    setText(
+    console.log("Updating Dashboard");
 
-        "schoolCount",
+    console.log(data);
 
-        data.totalSchools || 0
+    document.getElementById(
 
-    );
+        "schoolCount"
 
+    ).textContent =
 
-    setText(
-
-        "responseCount",
-
-        data.totalResponses || 0
-
-    );
+    data.totalSchools || 0;
 
 
-    setText(
 
-        "userCount",
+    document.getElementById(
 
-        data.activeUsers || 0
+        "responseCount"
 
-    );
+    ).textContent =
 
-}
+    data.totalResponses || 0;
 
 
-/*=====================================================
- SET TEXT
-=====================================================*/
 
-function setText(
+    document.getElementById(
 
-id,
+        "userCount"
 
-value
+    ).textContent =
 
-){
-
-    const el=
-
-    document.getElementById(id);
-
-    if(el){
-
-        el.textContent=value;
-
-    }
+    data.activeUsers || 0;
 
 }
 
@@ -217,7 +244,7 @@ value
 
 function bindEvents(){
 
-    const btn=
+    const btn =
 
     document.getElementById(
 
@@ -227,13 +254,7 @@ function bindEvents(){
 
     if(btn){
 
-        btn.addEventListener(
-
-            "click",
-
-            logout
-
-        );
+        btn.onclick = logout;
 
     }
 
@@ -260,40 +281,37 @@ async function logout(){
 
     }
 
-
     try{
 
-        const url=
+        await fetch(
 
-        WEB_APP_URL
+            WEB_APP_URL
 
-        +
+            +
 
-        "?action=logout"
+            "?action=logout"
 
-        +
+            +
 
-        "&token="
+            "&token="
 
-        +
+            +
 
-        encodeURIComponent(
+            encodeURIComponent(
 
-            ADMIN.token
+                ADMIN.token
+
+            )
 
         );
 
-
-        await fetch(url);
-
     }
 
-    catch(e){
+    catch(error){
 
-        console.log(e);
+        console.log(error);
 
     }
-
 
     localStorage.clear();
 
