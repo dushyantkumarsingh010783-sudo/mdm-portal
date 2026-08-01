@@ -1,18 +1,20 @@
-/* ===========================================
-   SMART FORM ENTERPRISE
-   CONFIGURATION
-=========================================== */
+/*=====================================================
+ SMART FORM ENTERPRISE v5.0
+ Configuration
+=====================================================*/
 
-const CONFIG = {
 
-    APP_NAME: "SMART FORM ENTERPRISE",
+const WEB_APP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
 
-    VERSION: "3.0",
 
-    API_URL: "https://script.google.com/macros/s/AKfycbxxGcoqNCngf6K97DzaheHr6jdEHOgTto9uwMT7drxZRJlADlFflnDlg1OQcBiXBOiR/exec",
+const APP_CONFIG = {
 
-    THEME: "government",
+    name : "SMART FORM ENTERPRISE",
 
-    DEBUG: false
+    version : "5.0",
+
+    developer : "PM POSHAN MIS",
+
+    api : WEB_APP_URL
 
 };
