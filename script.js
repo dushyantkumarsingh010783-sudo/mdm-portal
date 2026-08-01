@@ -1,8 +1,8 @@
 /*=====================================================
  SMART FORM ENTERPRISE v5.0
- Production JavaScript
+ Login Controller
  File : script.js
- Version : Final
+ Version : GET API Final
 =====================================================*/
 
 
@@ -13,9 +13,7 @@ const APP = {
 
     loading:false,
 
-    session:null,
-
-    role:null
+    session:null
 
 };
 
@@ -142,15 +140,10 @@ async function login(){
 
 
         const result =
-        await apiRequest({
-
-            action:"login",
-
-            userId:userId,
-
-            password:password
-
-        });
+        await loginAPI(
+            userId,
+            password
+        );
 
 
 
@@ -167,7 +160,6 @@ async function login(){
 
 
             return;
-
 
         }
 
@@ -218,6 +210,7 @@ async function login(){
 
 
     }
+
     catch(error){
 
 
@@ -225,9 +218,11 @@ async function login(){
 
 
         alert(
+
         "Server Connection Error : "
         +
         error.message
+
         );
 
 
@@ -241,64 +236,49 @@ async function login(){
 
 
 /*=====================================================
- API REQUEST
+ GET LOGIN API
 =====================================================*/
 
-async function apiRequest(data){
+async function loginAPI(
+userId,
+password
+){
+
+
+    const url =
+
+    WEB_APP_URL
+
+    +
+    "?action=login"
+
+    +
+    "&userId="
+
+    +
+    encodeURIComponent(userId)
+
+    +
+    "&password="
+
+    +
+    encodeURIComponent(password);
+
 
 
     const response =
-    await fetch(
 
-        WEB_APP_URL,
-
-        {
-
-
-            method:"POST",
-
-
-            headers:{
-
-                "Content-Type":
-                "text/plain;charset=utf-8"
-
-            },
-
-
-            body:
-
-            JSON.stringify(data)
-
-
-        }
-
-    );
+    await fetch(url);
 
 
 
     const text =
+
     await response.text();
 
 
 
-    try{
-
-
-        return JSON.parse(text);
-
-
-    }
-
-    catch(e){
-
-
-        throw new Error(
-            text
-        );
-
-
-    }
+    return JSON.parse(text);
 
 
 }
@@ -315,53 +295,45 @@ function redirectUser(role){
 
 
     role =
+
     String(role)
     .toUpperCase();
 
 
 
-    switch(role){
+    if(role==="ADMIN"){
 
 
-        case "ADMIN":
+        window.location.href =
+        "admin.html";
 
 
-            window.location.href =
-            "admin.html";
+    }
+
+    else if(role==="NODAL"){
 
 
-            break;
+        window.location.href =
+        "nodal.html";
 
 
+    }
 
-        case "NODAL":
-
-
-            window.location.href =
-            "nodal.html";
+    else if(role==="SCHOOL"){
 
 
-            break;
+        window.location.href =
+        "school.html";
 
 
+    }
 
-        case "SCHOOL":
-
-
-            window.location.href =
-            "school.html";
+    else{
 
 
-            break;
-
-
-
-        default:
-
-
-            alert(
-            "Role Not Defined"
-            );
+        alert(
+        "Invalid User Role"
+        );
 
 
     }
@@ -385,6 +357,7 @@ function setLoading(status){
 
 
     const btn =
+
     document.getElementById(
         "loginBtn"
     );
@@ -409,6 +382,7 @@ function setLoading(status){
 
 
     }
+
     else{
 
 
