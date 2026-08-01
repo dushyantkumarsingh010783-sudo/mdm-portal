@@ -2,127 +2,72 @@
 <html lang="hi">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SMART FORM ENTERPRISE</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>SMART FORM ENTERPRISE v5.0</title>
+
+    <meta name="theme-color" content="#1565C0">
+
+    <meta name="description"
+          content="SMART FORM ENTERPRISE v5.0">
+
+    <!-- Google Fonts -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Material Icons -->
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+
+    <!-- Main CSS -->
+
+    <link rel="stylesheet"
+          href="assets/css/style.css">
 
 </head>
 
 <body>
 
-<div class="app">
+    <!-- Preloader -->
 
-    <header class="header">
+    <div id="preloader"></div>
 
-        <h1>SMART FORM</h1>
+    <!-- Login Container -->
 
-        <p>PM POSHAN Monitoring Portal</p>
-
-    </header>
-
-    <main>
-
-        <form id="smartForm" autocomplete="off">
-
-            <div class="form-group">
-
-                <label>न्याय पंचायत</label>
-
-                <select id="nyayPanchayat" required>
-
-                    <option value="">लोड हो रहा है...</option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>विद्यालय का प्रकार</label>
-
-                <select id="schoolType" required>
-
-                    <option value="">चयन करें</option>
-
-                    <option value="प्राथमिक">प्राथमिक</option>
-
-                    <option value="उच्च प्राथमिक">उच्च प्राथमिक</option>
-
-                    <option value="कम्पोजिट">कम्पोजिट</option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>विद्यालय का नाम</label>
-
-                <select id="schoolName" required>
-
-                    <option value="">पहले ऊपर चयन करें</option>
-
-                </select>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>प्रधानाध्यापक का नाम</label>
-
-                <input
-                    type="text"
-                    id="headmaster"
-                    placeholder="प्रधानाध्यापक का नाम"
-                    required>
-
-            </div>
-
-            <div class="form-group">
-
-                <label>मोबाइल नम्बर</label>
-
-                <input
-                    type="tel"
-                    id="mobile"
-                    maxlength="10"
-                    placeholder="10 अंकों का मोबाइल नम्बर"
-                    required>
-
-            </div>
-
-            <button type="submit">
-
-                डेटा सुरक्षित करें
-
-            </button>
-
-        </form>
+    <main id="loginPage">
 
     </main>
 
-    <footer>
+    <!-- Toast Message -->
 
-        SMART FORM ENTERPRISE v3.0
+    <div id="toast"></div>
 
-    </footer>
+    <!-- Loading Overlay -->
 
-</div>
+    <div id="loadingScreen"></div>
 
-<div id="loader" class="loader hidden">
+    <!-- Modal Area -->
 
-    कृपया प्रतीक्षा करें...
+    <div id="modalContainer"></div>
 
-</div>
+    <!-- Main JS -->
 
-<script src="config.js"></script>
-
-<script src="script.js"></script>
+    <script src="assets/js/app.js"></script>
 
 </body>
 
